@@ -282,7 +282,7 @@ var labySol=function(nx,ny,pas){
   var compteur = 0; // le compteur de virage de l'algorithme de pledge
   var celluleSortie = (nx*ny)-1;
   dessinLaby(nx,ny,pas,mursH, mursV);
-  ajouter(mursH, 1); //on bouche l'entrée pour que l'algorithme de pledge ne sorte pas pas l'entrée
+  ajouter(mursH, 0); //on bouche l'entrée pour que l'algorithme de pledge ne sorte pas pas l'entrée
 
   rt(180);// on place la tortue dans la première cellule et on mets le pinceau en rouge
   fd(pas/2, pas/2);
@@ -290,35 +290,35 @@ var labySol=function(nx,ny,pas){
   setpc(1,0,0);
   pledge:
   while (true){// algorithme de pledge
-    while(!detecterMurDevant(nx,cActuelle, mursH, mursV, direction) && cActuelle != celluleSortie ){
+    while(!detecterMurDevant(nx,cActuelle, mursH, mursV, direction)){
       cActuelle=move(nx,cActuelle, direction); // 1ère étape de pledge : aller tout droit jusqu'au mur
-      if (cActuelle == celluleSortie) break pledge;
       fd(pas);
+      if (cActuelle == celluleSortie) break pledge;
     }
 
     do{ //2ème étape de pledge :suivre le mur à droite
       murDroite :
       while(detecterMurDroite(nx,cActuelle, mursH, mursV, direction)){ //tant qu'il y a un mur à droite
-        if(!detecterMurDevant(nx,cActuelle, mursH, mursV, direction)){
+        if(!detecterMurDevant(nx,cActuelle, mursH, mursV, direction)){ //s'il n'y a pas de murs devant, avance
           cActuelle=move(nx,cActuelle, direction);
-          if (cActuelle == celluleSortie) break pledge;
           fd(pas);
+          if (cActuelle == celluleSortie) break pledge; //on sort de la boucle à la sortie
         }
-        if (!detecterMurDroite(nx,cActuelle, mursH, mursV, direction)){
+        if (!detecterMurDroite(nx,cActuelle, mursH, mursV, direction)){ //s'il n'y a pas de murs à droite on passe la boucle
           break murDroite;
         }
-        while(detecterMurDevant(nx,cActuelle, mursH, mursV, direction)){ //s'il y a un mur devant
+        while(detecterMurDevant(nx,cActuelle, mursH, mursV, direction)){ //s'il y a un mur devant, on tourne à gauche
           lt(90);
           direction= rotation(direction,-90);
           compteur++;
         }
       }
-      rt(90);
+      rt(90); //s'il n'y a plus de murs à droite, on tourne à droite
       direction= rotation(direction,90);
       compteur--;
       cActuelle=move(nx,cActuelle, direction);
-      if (cActuelle == celluleSortie) break pledge;
       fd(pas);
+      if (cActuelle == celluleSortie) break pledge;
     } while(compteur != 0);
   }
 };
